@@ -22,11 +22,10 @@ class TripCellViewModel {
             content = Observable.just(model.content)
             images = Observable.just(model.images).map({ (imageStr) -> [SectionModel<String, String>] in
                 let imgs = imageStr.components(separatedBy: "http://")
-                var result: [String] = []
-                for img in imgs {
-                    if img.hasSuffix(".jpg") || img.hasSuffix(".JPG") {
-                        result.append("https://\(img)")
-                    }
+                let result = imgs.filter { (img) -> Bool in
+                    return img.hasSuffix(".jpg") || img.hasSuffix(".JPG")
+                }.map { (img) -> String in
+                    return "https://\(img)"
                 }
                 return [SectionModel(model: "TripImage", items: result)]
             })
