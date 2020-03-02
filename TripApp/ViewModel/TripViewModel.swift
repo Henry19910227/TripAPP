@@ -26,13 +26,10 @@ class TripViewModel: ViewModelProtocol {
     struct TripOutput {
         public var tripCellVMs: Driver<[SectionModel<String, TripCellViewModel>]>?
         public var loading: Driver<Bool>?
-        public var info: Driver<String>?
         init(tripCellVMs: Driver<[SectionModel<String, TripCellViewModel>]>,
-             loading: Driver<Bool>,
-             info: Driver<String> = PublishSubject<String>().asDriver(onErrorJustReturn: "")) {
+             loading: Driver<Bool>) {
             self.tripCellVMs = tripCellVMs
             self.loading = loading
-            self.info = info
         }
     }
     
@@ -41,9 +38,6 @@ class TripViewModel: ViewModelProtocol {
     
     // API
     public var service: TripService
-    
-    // Data
-    private var currentVMs: [TripCellViewModel]?
     
     // Subject
     private let tripDataSubject = PublishSubject<[SectionModel<String, TripCellViewModel>]>()
@@ -58,24 +52,13 @@ class TripViewModel: ViewModelProtocol {
     
     func transform(input: Input?) -> Output {
         self.input = input
-        setupInfoDriver()
         return Output(tripCellVMs: tripDataSubject.asDriver(onErrorJustReturn: []),
-                      loading: loadingSubject.asDriver(onErrorJustReturn: false),
-                      info: infoSubject.asDriver(onErrorJustReturn: ""))
+                      loading: loadingSubject.asDriver(onErrorJustReturn: false))
     }
 }
 
 extension TripViewModel {
-    private func setupInfoDriver() {
-        input!.infoTab
-            .map({ () -> [String] in
-                return self.currentVMs?.map({ (vm) -> String in
-                    return vm.model?.title ?? ""
-                }) ?? [String]()
-            }).asObservable().subscribe(onNext: {[unowned self] (titleArray) in
-                titleArray.forEach { self.infoSubject.onNext($0) }
-            }).disposed(by: disposeBag)
-    }
+
 }
 
 // MARK: API
@@ -91,7 +74,6 @@ extension TripViewModel {
             }
             return [SectionModel(model: "TripCellViewModel", items: tripCellVMs)]
         }.subscribe(onSuccess: { [unowned self] (data) in
-            self.currentVMs = data.first?.items
             self.tripDataSubject.onNext(data)
             self.loadingSubject.onNext(false)
         }, onError: { (error) in

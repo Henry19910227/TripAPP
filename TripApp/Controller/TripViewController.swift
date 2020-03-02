@@ -57,6 +57,7 @@ extension TripViewController {
     }
     
     private func setupRightButton() {
+        rightButton.addTarget(self, action: #selector(infoButtonClick), for: .touchUpInside)
         let barButtonItem = UIBarButtonItem(customView: rightButton)
         navigationItem.rightBarButtonItem = barButtonItem
     }
@@ -81,11 +82,6 @@ extension TripViewController {
             .map({ !$0 })
             .drive(loadingView.rx.isHidden)
             .disposed(by: disposeBag)
-        output
-            .info?
-            .drive(onNext: { (title) in
-                print(title)
-            }).disposed(by: disposeBag)
     }
 }
 
@@ -103,7 +99,7 @@ extension TripViewController: UITableViewDelegate {
 //MARK: - UITableViewDropDelegate
 extension TripViewController: UITableViewDropDelegate {
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
-        
+        print("performDropWith")
     }
     
     func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
@@ -114,7 +110,14 @@ extension TripViewController: UITableViewDropDelegate {
 //MARK: - UITableViewDragDelegate
 extension TripViewController: UITableViewDragDelegate {
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        print("itemsForBeginning")
-        return [UIDragItem]()
+        return []
+    }
+}
+
+extension TripViewController {
+    @objc func infoButtonClick() {
+        dataSource?.sectionModels.first?.items.forEach({ (vm) in
+            print("title : \(vm.model?.title ?? "")")
+        })
     }
 }
