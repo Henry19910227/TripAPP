@@ -13,6 +13,8 @@ import RxDataSources
 
 class TripCellViewModel: ViewModelProtocol {
     
+    var disposeBag = DisposeBag()
+    
     typealias Input = TripCellInput
     typealias Output = TripCellOutput
     
@@ -24,11 +26,11 @@ class TripCellViewModel: ViewModelProtocol {
     }
     
     struct TripCellOutput {
-        public var moreTab: Signal<Void>?
+        public var moreTab: Signal<String>?
         public var title: Observable<String>?
         public var content: Observable<String>?
         public var images: Observable<[SectionModel<String, String>]>?
-        init(moreTab: Signal<Void>?,
+        init(moreTab: Signal<String>?,
              title: Observable<String>?,
              content: Observable<String>?,
              images: Observable<[SectionModel<String, String>]>?) {
@@ -44,17 +46,23 @@ class TripCellViewModel: ViewModelProtocol {
     private var titleObservable: Observable<String>?
     private var contentObservable: Observable<String>?
     private var imagesObservable: Observable<[SectionModel<String, String>]>?
+    private var tapSubject = PublishSubject<String>()
     
     init(model: Trip?) {
         self.model = model
         bindModel()
+    }
+    
+    public func clear() {
+        disposeBag = DisposeBag()
     }
 }
 
 extension TripCellViewModel {
     public func transform(input: Input?) -> Output {
         self.input = input
-        return Output(moreTab: self.input?.moreTab,
+        setupTapSignal()
+        return Output(moreTab: tapSubject.asSignal(onErrorJustReturn: ""),
                       title: titleObservable,
                       content: contentObservable,
                       images: imagesObservable)
@@ -75,5 +83,11 @@ extension TripCellViewModel {
             }
             return [SectionModel(model: "TripImage", items: result)]
         })
+    }
+    
+    private func setupTapSignal() {
+        input?.moreTab.emit(onNext:  { [unowned self] in
+            self.tapSubject.onNext(self.model?.title ?? "")
+        }).disposed(by: disposeBag)
     }
 }

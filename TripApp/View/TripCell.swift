@@ -46,6 +46,7 @@ extension TripCell {
         collectionView.contentOffset = CGPoint(x: 0, y: 0)
         collectionView.dataSource = nil
         collectionView.delegate = nil
+        viewModel?.clear()
         disposeBag = DisposeBag()
     }
 }
@@ -78,12 +79,6 @@ extension TripCell {
                 .images?
                 .bind(to: collectionView.rx.items(dataSource: dataSource!))
                 .disposed(by: disposeBag)
-        
-            output
-                .moreTab?
-                .emit(onNext: {
-                    print("\(self.tripTitleLabel.text ?? "") 按鈕點擊!!")
-                }).disposed(by: disposeBag)
     }
 }
 

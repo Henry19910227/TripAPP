@@ -34,7 +34,7 @@ class TripViewModel: ViewModelProtocol {
     }
     
     // RX
-    private let disposeBag = DisposeBag()
+    private var disposeBag = DisposeBag()
     
     // API
     public var service: TripService
@@ -55,26 +55,55 @@ class TripViewModel: ViewModelProtocol {
         return Output(tripCellVMs: tripDataSubject.asDriver(onErrorJustReturn: []),
                       loading: loadingSubject.asDriver(onErrorJustReturn: false))
     }
+    
+    func clear() {
+        disposeBag = DisposeBag()
+    }
 }
 
 extension TripViewModel {
-    func bindAllTripCellVM(vms: [TripCellViewModel]) {
-        
+    func bindAllTripCellTaps(observables: [Observable<String>]) {
+        Observable.merge(observables).subscribe(onNext: { (text) in
+            print("按鈕點擊!!! \(text)")
+        }).disposed(by: disposeBag)
     }
-
 }
 
 // MARK: API
 extension TripViewModel {
     
+//    public func apiGetAllTrips() {
+//        loadingSubject.onNext(true)
+//        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2, execute: {
+//            var tripCellTapObservables: [Observable<String>] = []
+//            var tripCellVMs: [TripCellViewModel] = []
+//            for _ in 0...5 {
+//                let item = Trip(title: "test", content: "test", images: "www.bigstockphoto.com/images/homepage/module-6.jpg")
+//                let vm = TripCellViewModel(model: item)
+//                tripCellVMs.append(vm)
+//                if let moreTap = vm.transform(input: nil).moreTab {
+//                    tripCellTapObservables.append(moreTap.asObservable())
+//                }
+//            }
+//            self.bindAllTripCellTaps(observables: tripCellTapObservables)
+//            self.tripDataSubject.onNext([SectionModel(model: "TripCellViewModel", items: tripCellVMs)])
+//            self.loadingSubject.onNext(false)
+//        })
+//    }
+    
     public func apiGetAllTrips() {
         loadingSubject.onNext(true)
-        service.apiTrips(parameter: nil).map { (tripItem) -> [SectionModel<String, TripCellViewModel>] in
+        service.apiTrips(parameter: nil).map { [unowned self] (tripItem) -> [SectionModel<String, TripCellViewModel>] in
             var tripCellVMs: [TripCellViewModel] = []
+            var tripCellTapObservables: [Observable<String>] = []
             for item in tripItem.data! {
                 let vm = TripCellViewModel(model: item)
                 tripCellVMs.append(vm)
+                if let moreTap = vm.transform(input: nil).moreTab {
+                    tripCellTapObservables.append(moreTap.asObservable())
+                }
             }
+            self.bindAllTripCellTaps(observables: tripCellTapObservables)
             return [SectionModel(model: "TripCellViewModel", items: tripCellVMs)]
         }.subscribe(onSuccess: { [unowned self] (data) in
             self.tripDataSubject.onNext(data)
