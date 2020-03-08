@@ -14,12 +14,13 @@ import RxDataSources
 class TripCell: UITableViewCell {
     
     // RX
-    private let disposeBag = DisposeBag()
+    private var disposeBag = DisposeBag()
     
     // UI
     @IBOutlet weak var tripTitleLabel: UILabel!
     @IBOutlet weak var contentLabel: UILabel!
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var moreButton: UIButton!
     
     // Data
     private var dataSource: RxCollectionViewSectionedReloadDataSource<SectionModel<String, String>>?
@@ -45,7 +46,7 @@ extension TripCell {
         collectionView.contentOffset = CGPoint(x: 0, y: 0)
         collectionView.dataSource = nil
         collectionView.delegate = nil
-        
+        disposeBag = DisposeBag()
     }
 }
 
@@ -63,18 +64,26 @@ extension TripCell {
 //MARK: - Bind
 extension TripCell {
     private func bindViewModel(viewModel: TripCellViewModel) {
-        viewModel
-            .title?
-            .bind(to: tripTitleLabel.rx.text)
-            .disposed(by: disposeBag)
-        viewModel
-            .content?
-            .bind(to: contentLabel.rx.text)
-            .disposed(by: disposeBag)
-        viewModel
-            .images?
-            .bind(to: collectionView.rx.items(dataSource: dataSource!))
-            .disposed(by: disposeBag)
+        let input = TripCellViewModel.Input(moreTab: moreButton.rx.tap.asSignal())
+        let output = viewModel.transform(input: input)
+            output
+                .title? 
+                .bind(to: tripTitleLabel.rx.text)
+                .disposed(by: disposeBag)
+            output
+                .content?
+                .bind(to: contentLabel.rx.text)
+                .disposed(by: disposeBag)
+            output
+                .images?
+                .bind(to: collectionView.rx.items(dataSource: dataSource!))
+                .disposed(by: disposeBag)
+        
+            output
+                .moreTab?
+                .emit(onNext: {
+                    print("\(self.tripTitleLabel.text ?? "") 按鈕點擊!!")
+                }).disposed(by: disposeBag)
     }
 }
 

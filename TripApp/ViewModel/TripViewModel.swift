@@ -58,18 +58,21 @@ class TripViewModel: ViewModelProtocol {
 }
 
 extension TripViewModel {
+    func bindAllTripCellVM(vms: [TripCellViewModel]) {
+        
+    }
 
 }
 
 // MARK: API
 extension TripViewModel {
+    
     public func apiGetAllTrips() {
         loadingSubject.onNext(true)
         service.apiTrips(parameter: nil).map { (tripItem) -> [SectionModel<String, TripCellViewModel>] in
             var tripCellVMs: [TripCellViewModel] = []
             for item in tripItem.data! {
-                let vm = TripCellViewModel()
-                vm.model = item
+                let vm = TripCellViewModel(model: item)
                 tripCellVMs.append(vm)
             }
             return [SectionModel(model: "TripCellViewModel", items: tripCellVMs)]

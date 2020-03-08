@@ -56,6 +56,11 @@
                             <constraint firstAttribute="height" constant="1" id="a1P-Kk-8o3"/>
                         </constraints>
                     </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kjo-0p-ZfI">
+                        <rect key="frame" x="271" y="12.5" width="34" height="26"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                        <state key="normal" title="看更多"/>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="izD-cw-A0t" firstAttribute="leading" secondItem="AVa-4f-fvk" secondAttribute="leading" id="28T-jO-t4k"/>
@@ -67,7 +72,9 @@
                     <constraint firstAttribute="trailing" secondItem="el8-i9-fT4" secondAttribute="trailing" id="QcF-g1-BMW"/>
                     <constraint firstItem="AVa-4f-fvk" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="15" id="a5z-Gn-plY"/>
                     <constraint firstItem="Ae4-hd-kCv" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="dPx-Qd-cIT"/>
+                    <constraint firstItem="kjo-0p-ZfI" firstAttribute="centerY" secondItem="AVa-4f-fvk" secondAttribute="centerY" id="hAw-44-BWA"/>
                     <constraint firstItem="Ae4-hd-kCv" firstAttribute="top" secondItem="el8-i9-fT4" secondAttribute="bottom" constant="9" id="i9S-th-Kgp"/>
+                    <constraint firstAttribute="trailing" secondItem="kjo-0p-ZfI" secondAttribute="trailing" constant="15" id="kKT-NT-k4Q"/>
                     <constraint firstItem="el8-i9-fT4" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="q2b-1k-XxP"/>
                     <constraint firstItem="AVa-4f-fvk" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="25" id="ttt-Yd-Hzr"/>
                 </constraints>
@@ -76,6 +83,7 @@
             <connections>
                 <outlet property="collectionView" destination="el8-i9-fT4" id="1Ot-I5-ajW"/>
                 <outlet property="contentLabel" destination="izD-cw-A0t" id="7Hp-eg-Ogw"/>
+                <outlet property="moreButton" destination="kjo-0p-ZfI" id="Hjw-5Y-mtQ"/>
                 <outlet property="tripTitleLabel" destination="AVa-4f-fvk" id="yie-lX-jCu"/>
             </connections>
             <point key="canvasLocation" x="137.68115942028987" y="195.53571428571428"/>
